@@ -2,7 +2,7 @@
 https://www.techiedelight.com/?problem=ActivitySelectionProblem
 
 ### 一般來說用Greedy Algorithmn
-> 1. 對活動進行升序排序。
+> 1. 對活動進行升序排序。 (可以用startTime 或 end Time, 課堂上我用了startTime, 所以我這裡用endTime)
 > 2. 然後，我們loop每個活動, 
 >      選擇開始時間大於或等於先前選擇的活動的結束時間的第一個活動。 
 >       我們繼續這個過程，直到我們選擇了所有的活動。 
