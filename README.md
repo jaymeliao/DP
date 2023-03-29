@@ -1,11 +1,9 @@
 # DP
 https://www.techiedelight.com/?problem=ActivitySelectionProblem
 
-一般來說用Greedy Algorithmn
-
-'''java
+### 一般來說用Greedy Algorithmn
+```java
 import java.util.*;
-
 class Solution {
     public static Set<Activity> selectActivity(List<Activity> activities) {
         // Sort the activities based on their finish time in ascending order
@@ -25,4 +23,4 @@ class Solution {
         return selectedActivities;
     }
 }
-'''
+```
