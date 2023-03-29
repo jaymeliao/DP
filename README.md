@@ -31,7 +31,52 @@ class Solution {
 }
 ```
 
-### 用Dynamic Programming 
+
+### 用recursion
+```java
+import java.util.*;
+
+class Solution {
+    public static Set<Activity> selectActivity(List<Activity> activities) {
+        return selectActivityRecursive(activities, 0, new HashSet<>());
+    }
+
+    private static Set<Activity> selectActivityRecursive(List<Activity> activities, int i, Set<Activity> selectedActivities) {
+        if (i >= activities.size()) {
+            return selectedActivities;
+        }
+
+        Activity currentActivity = activities.get(i);
+
+        // Include the current activity if it doesn't overlap with any of the selected activities
+        boolean canInclude = true;
+        for (Activity selectedActivity : selectedActivities) {
+            if (selectedActivity.overlapsWith(currentActivity)) {
+                canInclude = false;
+                break;
+            }
+        }
+        Set<Activity> includedActivities = new HashSet<>(selectedActivities);
+        if (canInclude) {
+            includedActivities.add(currentActivity);
+            includedActivities = selectActivityRecursive(activities, i + 1, includedActivities);
+        }
+
+        // Exclude the current activity
+        Set<Activity> excludedActivities = selectActivityRecursive(activities, i + 1, selectedActivities);
+
+        // Return the larger set of non-overlapping activities
+        if (includedActivities.size() > excludedActivities.size()) {
+            return includedActivities;
+        } else {
+            return excludedActivities;
+        }
+    }
+}
+```
+
+
+### 用Dynamic Programming for Greedy Algorithmn
 
 To solve this problem using dynamic programming, we can use a similar approach as the greedy approach, but with memoization. We can define a 1D array dp of size n, where n is the number of activities. The value of dp[i] will represent the maximum number of activities that can be performed from the first i activities.
 
@@ -82,3 +127,82 @@ class Solution {
     }
 }
 ```
+
+
+### 用Dynamic Programming for Recursion
+we can use dynamic programming to optimize the recursive approach for finding the maximum set of non-overlapping activities.
+
+
+```java
+import java.util.*;
+
+class Solution {
+    public static Set<Activity> selectActivity(List<Activity> activities) {
+        int n = activities.size();
+        int[][] memo = new int[n][n + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(memo[i], -1);
+        }
+        Set<Activity> result = selectActivityRecursive(activities, 0, new HashSet<>(), memo);
+        return result;
+    }
+
+    private static Set<Activity> selectActivityRecursive(List<Activity> activities, int i, Set<Activity> selectedActivities, int[][] memo) {
+        if (i >= activities.size()) {
+            return selectedActivities;
+        }
+        if (memo[i][selectedActivities.size()] != -1) {
+            return intSetToActivitySet(memo[i][selectedActivities.size()], activities);
+        }
+
+        Activity currentActivity = activities.get(i);
+
+        // Include the current activity if it doesn't overlap with any of the selected activities
+        boolean canInclude = true;
+        for (Activity selectedActivity : selectedActivities) {
+            if (selectedActivity.overlapsWith(currentActivity)) {
+                canInclude = false;
+                break;
+            }
+        }
+        Set<Activity> includedActivities = new HashSet<>(selectedActivities);
+        if (canInclude) {
+            includedActivities.add(currentActivity);
+            includedActivities = selectActivityRecursive(activities, i + 1, includedActivities, memo);
+            memo[i][selectedActivities.size()] = activitySetToIntSet(includedActivities, activities);
+        }
+
+        // Exclude the current activity
+        Set<Activity> excludedActivities = selectActivityRecursive(activities, i + 1, selectedActivities, memo);
+
+        // Return the larger set of non-overlapping activities
+        if (includedActivities.size() > excludedActivities.size()) {
+            return includedActivities;
+        } else {
+            return excludedActivities;
+        }
+    }
+
+    private static Set<Activity> intSetToActivitySet(int intSet, List<Activity> activities) {
+        Set<Activity> result = new HashSet<>();
+        for (int i = 0; i < activities.size(); i++) {
+            if ((intSet & (1 << i)) != 0) {
+                result.add(activities.get(i));
+            }
+        }
+        return result;
+    }
+
+    private static int activitySetToIntSet(Set<Activity> activitySet, List<Activity> activities) {
+        int result = 0;
+        for (int i = 0; i < activities.size(); i++) {
+            if (activitySet.contains(activities.get(i))) {
+                result |= (1 << i);
+            }
+        }
+        return result;
+    }
+}
+```
+
+
